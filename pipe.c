@@ -83,6 +83,6 @@ struct builtin pipe_struct = {
   pipe_builtin,           // function implementing the builtin
   BUILTIN_ENABLED,        // initial flags for builtin
   (char* const*)pipe_doc, // array of long documentation strings.
-  "pipe {RNAME WNAME | ARRNAME}",
+  "pipe {rname wname | arrname}",
   0
 };
