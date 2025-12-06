@@ -13,7 +13,7 @@
 #define ARRLEN(arr) (__extension__ _Generic(typeof(arr), \
   typeof(*(arr))[sizeof(arr) / sizeof(*(arr))]: sizeof(arr) / sizeof(*(arr))))
 
-int pipe_builtin(WORD_LIST *list) {
+static int pipe_builtin(WORD_LIST *list) {
   struct {
     bool is_array;
     union {
@@ -67,7 +67,7 @@ usage:
   return EX_USAGE;
 }
 
-char const *const pipe_doc[] = {
+static char const *const pipe_doc[] = {
   "Create a pipe, just like pipe(2).",
   "",
   "Create a pipe, as by pipe(2), and return one file descriptor each for",
