@@ -9,6 +9,10 @@ stdenv.mkDerivation {
   preUnpack = ''
     installFlagsArray+=("DESTDIR=''${out@Q}")
   '';
+  postUnpack = ''
+    export CFLAGS="-fdebug-prefix-map=$(realpath "$sourceRoot")=$src''${CFLAGS+ }$CFLAGS"
+  '';
+  separateDebugInfo = true;
 
   meta = {
     platforms = lib.platforms.linux;
