@@ -29,14 +29,14 @@ bash_headers := $(patsubst ./%,%,$(patsubst $(bash_includedir)/bash/%,%,$\
   $(foreach sub,. builtins include,$\
     $(wildcard $(bash_includedir)/bash/$(sub)/*.h))))
   include/bash include/bash/builtins include/bash/include \
-	$(addprefix include/bash/,$(bash_headers)) \
+  $(addprefix include/bash/,$(bash_headers)) \
 &: $(addprefix $(bash_includedir)/bash/,$(bash_headers))
 	mkdir -p include
 	rm -rf include/bash
 	cp -r --no-preserve=all $(bash_includedir)/bash include
 	$(let tmp,$(shell mktemp),$\
-		$(file >$(tmp),/^#include/{)$\
-		$(foreach header,$(bash_headers),$\
-			$(file >>$(tmp),  s|["<]$(notdir $(header))[">]|<bash/$(header)>|))$\
-		$(file >>$(tmp),})$\
+	  $(file >$(tmp),/^#include/{)$\
+	  $(foreach header,$(bash_headers),$\
+	    $(file >>$(tmp),  s|["<]$(notdir $(header))[">]|<bash/$(header)>|))$\
+	  $(file >>$(tmp),})$\
 	  find include/bash -name '*.h' -exec sed -f $(tmp) -i \{} +)
