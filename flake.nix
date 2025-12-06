@@ -23,7 +23,7 @@
           };
         };
       });
-      bashutils = final.callPackage ./. { };
+      bashutils = final.callPackage ./. { stdenv = final.gcc15Stdenv; };
     };
   } // forSystems lib.systems.flakeExposed (system: self: let
     pkgs = import nixpkgs {
