@@ -79,10 +79,10 @@ static char const *const pipe_doc[] = {
 };
 
 struct builtin pipe_struct = {
-  "pipe",                 // builtin name
-  pipe_builtin,           // function implementing the builtin
-  BUILTIN_ENABLED,        // initial flags for builtin
-  (char* const*)pipe_doc, // array of long documentation strings.
+  "pipe",
+  pipe_builtin,
+  BUILTIN_ENABLED,
+  (char* const*)pipe_doc,
   "pipe {rname wname | arrname}",
   0
 };
