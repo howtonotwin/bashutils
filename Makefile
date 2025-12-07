@@ -6,7 +6,7 @@ COMPILE.c = \
   -Iinclude -D_GNU_SOURCE $(CPPFLAGS) \
   $(TARGET_ARCH) -c
 
-ALL_PLUGINS := pipe
+ALL_PLUGINS := pipe scriptlocal
 
 .PHONY: all clean install
 all: $(addprefix plugins/,$(ALL_PLUGINS))
@@ -23,6 +23,7 @@ plugins/%:
 	  $(TARGET_ARCH) $(filter-out %.h %/,$+) $(LDLIBS) \
 	  -o $@
 plugins/pipe: pipe.o
+plugins/scriptlocal: scriptlocal.o unused.o
 
 # bash's include files are set up stupidly and the .pc file insists on infecting
 # us with it (by -Iing every include/bash/**/ directory)
