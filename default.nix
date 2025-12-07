@@ -1,7 +1,7 @@
 { lib, stdenv, pkg-config, bash }:
 stdenv.mkDerivation {
   pname = "bashutils";
-  version = "0.1.0";
+  version = "0.1.0-unstable-2025-12-06";
 
   src = ./.;
   nativeBuildInputs = [ pkg-config ];
