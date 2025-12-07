@@ -25,6 +25,22 @@
       });
       bashutils = final.callPackage ./. { stdenv = final.gcc15Stdenv; };
     };
+    overrides.bash.debuggable = pkgs: final: prev: {
+      src = pkgs.runCommandLocal "bash-src" {
+        inherit (prev) src;
+      } ''
+        unpackPhase
+        mv -v "$sourceRoot" "$out"
+      '';
+      postUnpack = prev.postUnpack or "" + ''
+        export CFLAGS+=" -Og -g -fdebug-prefix-map=$(realpath "$sourceRoot")=$src"
+      '';
+    };
+    overrides.bash.fullPluginInterface = pkgs: final: prev: {
+      postUnpack = prev.postUnpack or "" + ''
+        export CFLAGS+=" -DINCLUDE_UNUSED"
+      '';
+    };
   } // forSystems lib.systems.flakeExposed (system: self: let
     pkgs = import nixpkgs {
       inherit system;
@@ -37,18 +53,11 @@
       default = self.packages.bashutils;
     };
     devShells = {
-      bashutils = let
-        bash' = pkgs.bash.overrideAttrs (final: prev: {
-          src = pkgs.runCommandLocal "bash-src" {
-            inherit (prev) src;
-          } ''
-            unpackPhase
-            mv -v "$sourceRoot" "$out"
-          '';
-          postUnpack = prev.postUnpack or "" + ''
-            export CFLAGS+=" -Og -g -fdebug-prefix-map=$(realpath "$sourceRoot")=$src"
-          '';
-        });
+      bashutilsWithBashOverrides = overrides: let
+        bash' = lib.foldl
+          (pkg: override: pkg.overrideAttrs (override pkgs))
+          pkgs.bash
+          overrides;
         pkg = self.packages.bashutils.override { bash = bash'; };
       in (pkgs.mkShell.override {
         inherit (pkg) stdenv;
@@ -61,7 +70,13 @@
           "lib/debug"
           [ bash' ];
       });
-      default = self.devShells.bashutils;
+      default = self.devShells.bashutilsWithBashOverrides [
+        self.overrides.bash.debuggable
+      ];
+      withFullBash = self.devShells.bashutilsWithBashOverrides [
+        self.overrides.bash.debuggable
+        self.overrides.bash.fullPluginInterface
+      ];
     };
   });
 }
