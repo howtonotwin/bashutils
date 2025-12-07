@@ -36,5 +36,32 @@
       inherit (pkgs) bashutils;
       default = self.packages.bashutils;
     };
+    devShells = {
+      bashutils = let
+        bash' = pkgs.bash.overrideAttrs (final: prev: {
+          src = pkgs.runCommandLocal "bash-src" {
+            inherit (prev) src;
+          } ''
+            unpackPhase
+            mv -v "$sourceRoot" "$out"
+          '';
+          postUnpack = prev.postUnpack or "" + ''
+            export CFLAGS+=" -Og -g -fdebug-prefix-map=$(realpath "$sourceRoot")=$src"
+          '';
+        });
+        pkg = self.packages.bashutils.override { bash = bash'; };
+      in (pkgs.mkShell.override {
+        inherit (pkg) stdenv;
+      } {
+        name = "bashutils-dev";
+        inputsFrom = [ pkg ];
+      }).overrideAttrs (final: prev: {
+        NIX_DEBUG_INFO_DIRS = lib.makeSearchPathOutput
+          "debug"
+          "lib/debug"
+          [ bash' ];
+      });
+      default = self.devShells.bashutils;
+    };
   });
 }
