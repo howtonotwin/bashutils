@@ -1,9 +1,8 @@
 #include <errno.h>
 #include <unistd.h>
 
-#include <bash/config.h>
-#include <bash/shell.h>
 #include <bash/builtins.h>
+#include <bash/shell.h>
 #include <bash/builtins/common.h>
 
 #if !ARRAY_VARS
