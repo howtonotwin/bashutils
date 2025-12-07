@@ -1,3 +1,6 @@
+ifndef PKG_CONFIG
+PKG_CONFIG := pkg-config
+endif
 COMPILE.c = \
   $(CC) -std=c23 -fPIC $(CFLAGS) \
   -Iinclude -D_GNU_SOURCE $(CPPFLAGS) \
@@ -24,7 +27,7 @@ plugins/pipe: pipe.o
 # bash's include files are set up stupidly and the .pc file insists on infecting
 # us with it (by -Iing every include/bash/**/ directory)
 # Reject this by patching the headers
-bash_includedir := $(shell pkg-config bash --variable=includedir)
+bash_includedir := $(shell $(PKG_CONFIG) bash --variable=includedir)
 bash_headers := $(patsubst ./%,%,$(patsubst $(bash_includedir)/bash/%,%,$\
   $(foreach sub,. builtins include,$\
     $(wildcard $(bash_includedir)/bash/$(sub)/*.h))))
