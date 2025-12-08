@@ -24,6 +24,9 @@
         };
       });
       bashutils = final.callPackage ./. { stdenv = final.gcc15Stdenv; };
+      bashWithLoadables = loadables: final.callPackage
+        ./bashWithLoadables.nix
+        { inherit loadables; };
     };
     overrides.bash.debuggable = pkgs: final: prev: {
       src = pkgs.runCommandLocal "bash-src" {
@@ -50,8 +53,17 @@
   in {
     packages = {
       inherit (pkgs) bashutils;
+      bashWithBashutils = pkgs.bashWithLoadables [ pkgs.bashutils ];
       default = self.packages.bashutils;
     };
+    apps = {
+      bashWithBashutils = {
+        type = "app";
+        program = lib.getExe self.packages.bashWithBashutils;
+      };
+      default = self.apps.bashWithBashutils;
+    };
+
     devShells = {
       bashutilsWithBashOverrides = overrides: let
         bash' = lib.foldl
