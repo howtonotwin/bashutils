@@ -65,30 +65,30 @@
     };
 
     devShells = {
-      bashutilsWithBashOverrides = overrides: let
-        bash' = lib.foldl
-          (pkg: override: pkg.overrideAttrs (override pkgs))
-          pkgs.bash
-          overrides;
-        pkg = self.packages.bashutils.override { bash = bash'; };
-      in (pkgs.mkShell.override {
-        inherit (pkg) stdenv;
-      } {
-        name = "bashutils-dev";
-        inputsFrom = [ pkg ];
-      }).overrideAttrs (final: prev: {
-        NIX_DEBUG_INFO_DIRS = lib.makeSearchPathOutput
-          "debug"
-          "lib/debug"
-          [ bash' ];
-      });
-      default = self.devShells.bashutilsWithBashOverrides [
+      default = self.devShellGenerators.bashutilsWithBashOverrides [
         self.overrides.bash.debuggable
       ];
-      withFullBash = self.devShells.bashutilsWithBashOverrides [
+      withFullBash = self.devShellGenerators.bashutilsWithBashOverrides [
         self.overrides.bash.debuggable
         self.overrides.bash.fullPluginInterface
       ];
     };
+    devShellGenerators.bashutilsWithBashOverrides = overrides: let
+      bash' = lib.foldl
+        (pkg: override: pkg.overrideAttrs (override pkgs))
+        pkgs.bash
+        overrides;
+      pkg = self.packages.bashutils.override { bash = bash'; };
+    in (pkgs.mkShell.override {
+      inherit (pkg) stdenv;
+    } {
+      name = "bashutils-dev";
+      inputsFrom = [ pkg ];
+    }).overrideAttrs (final: prev: {
+      NIX_DEBUG_INFO_DIRS = lib.makeSearchPathOutput
+        "debug"
+        "lib/debug"
+        [ bash' ];
+    });
   });
 }
