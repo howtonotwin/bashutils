@@ -16,7 +16,7 @@
         licenses = prev.licenses // {
           howtonotwin = {
             shortName = "howtonotwin";
-            fullName = "(c) 2025 Rasheeq Azad. All Rights Reserved";
+            fullName = "(c) 2026 Rasheeq Azad. All Rights Reserved";
             free = false;
             deprecated = false;
             redistributable = false;
@@ -36,7 +36,7 @@
         mv -v "$sourceRoot" "$out"
       '';
       postUnpack = prev.postUnpack or "" + ''
-        export CFLAGS+=" -Og -g -fdebug-prefix-map=$(realpath "$sourceRoot")=$src"
+        export CFLAGS+=" -Og -g"
       '';
     };
     overrides.bash.fullPluginInterface = pkgs: final: prev: {
@@ -55,13 +55,6 @@
       inherit (pkgs) bashutils;
       bashWithBashutils = pkgs.bashWithLoadables [ pkgs.bashutils ];
       default = self.packages.bashutils;
-    };
-    apps = {
-      bashWithBashutils = {
-        type = "app";
-        program = lib.getExe self.packages.bashWithBashutils;
-      };
-      default = self.apps.bashWithBashutils;
     };
 
     devShells = {

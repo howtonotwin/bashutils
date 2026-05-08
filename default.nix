@@ -2,15 +2,13 @@
 stdenv.mkDerivation {
   pname = "bashutils";
   version = "0.3.0-unstable-2026-04-17";
+  __structuredAttrs = true;
 
-  src = ./.;
+  src               = ./.;
   nativeBuildInputs = [ pkg-config ];
-  buildInputs = [ bash ];
+  buildInputs       = [ bash ];
   preUnpack = ''
     installFlagsArray+=("DESTDIR=''${out@Q}")
-  '';
-  postUnpack = ''
-    export CFLAGS="-fdebug-prefix-map=$(realpath "$sourceRoot")=$src''${CFLAGS+ }$CFLAGS"
   '';
   separateDebugInfo = true;
 
