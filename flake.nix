@@ -16,7 +16,7 @@
         licenses = prev.licenses // {
           howtonotwin = {
             shortName = "howtonotwin";
-            fullName = "(c) 2026 Rasheeq Azad. All Rights Reserved";
+            fullName = "(c) Rasheeq Azad. All Rights Reserved";
             free = false;
             deprecated = false;
             redistributable = false;
