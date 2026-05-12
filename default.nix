@@ -1,7 +1,7 @@
 { lib, stdenv, pkg-config, bash }:
 stdenv.mkDerivation {
   pname = "bashutils";
-  version = "0.3.1-unstable-2026-05-11";
+  version = "0.4.0";
   __structuredAttrs = true;
 
   src               = ./.;
