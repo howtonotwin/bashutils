@@ -5,6 +5,13 @@
 #include <bash/shell.h>
 #include <bash/builtins/common.h>
 
+// TODO: It's tempting, from an implementation perspective, to unconditionally
+//       print the new offset on stdout (removing the need to meddle with shell
+//       variables ourselves). However, to a user who doesn't want the new
+//       offset, this might be extremely annoying (presumably the output would
+//       need to be suppressed by >/dev/null).
+//
+//       Figure out what the best interface is.
 static int seek_builtin(WORD_LIST *list) {
   bool end = false;
   if(!list) goto usage;
