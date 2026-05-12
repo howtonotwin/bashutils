@@ -38,6 +38,8 @@ static char const *const pipe_doc[] = {
   "",
   "\tpipe=(${ pipe; })",
   "\techo words >&${pipe[1]}",
+  "\texec {pipe[1]}>&-",
+  "\tcat <&${pipe[0]}        # output: words",
   NULL
 };
 
