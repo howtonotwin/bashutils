@@ -15,18 +15,15 @@
       lib = prev.lib.extend (final: prev: {
         licenses = prev.licenses // {
           howtonotwin = {
-            shortName = "howtonotwin";
-            fullName = "(c) Rasheeq Azad. All Rights Reserved";
-            free = false;
-            deprecated = false;
+            shortName       = "howtonotwin";
+            fullName        = "(c) Rasheeq Azad. All Rights Reserved";
+            free            = false;
+            deprecated      = false;
             redistributable = false;
           };
         };
       });
-      bashutils = final.callPackage ./. { stdenv = final.gcc15Stdenv; };
-      bashWithLoadables = loadables: final.callPackage
-        ./bashWithLoadables.nix
-        { inherit loadables; };
+      bashutils = final.callPackage ./. { };
     };
     overrides.bash.debuggable = pkgs: final: prev: {
       src = pkgs.runCommandLocal "bash-src" {
@@ -53,7 +50,6 @@
   in {
     packages = {
       inherit (pkgs) bashutils;
-      bashWithBashutils = pkgs.bashWithLoadables [ pkgs.bashutils ];
       default = self.packages.bashutils;
     };
 
