@@ -41,7 +41,7 @@
         export CFLAGS+=" -DINCLUDE_UNUSED"
       '';
     };
-  } // forSystems lib.systems.flakeExposed (system: self: let
+  } // forSystems lib.platforms.linux (system: self: let
     pkgs = import nixpkgs {
       inherit system;
       overlays = [ self.overlays.default ];
