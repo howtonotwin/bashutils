@@ -56,10 +56,10 @@ static char const *const mkmemfd_doc[] = {
   "",
   "New open descriptions can be opened for the file by opening its magic",
   "symlink in /proc/self/fd (if procfs is mounted). The (mandatory!)",
-  "NAME argument will appear in the target of the corresponding magic,",
-  "for debugging purposes, but otherwise has no effect. The flags",
-  "argument of memfd_create(2) currently cannot be specified, so the new",
-  "file will immediately have F_SEAL_SEAL (and no other seals).",
+  "NAME argument will appear in the target of the link, for informative",
+  "purposes. NAME otherwise has no effect. The flags argument of",
+  "memfd_create(2) currently cannot be specified, so the new file will",
+  "immediately have F_SEAL_SEAL (and no other seals).",
   NULL
 };
 
