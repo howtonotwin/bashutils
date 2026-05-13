@@ -16,15 +16,12 @@ clean:
 install: all
 	install -Dt $(DESTDIR)/lib/bash plugins/*
 
-plugins/%:
+plugins/%: %.o
 	@mkdir -p $(@D)
 	$(CC) -shared -Wl,-soname,$(@F) $(LDFLAGS) \
 	  $(TARGET_ARCH) $(filter-out %.h %/,$+) $(LDLIBS) \
 	  -o $@
-plugins/scriptlocal: scriptlocal.o unused.o
-plugins/pipe:        pipe.o
-plugins/mkmemfd:     mkmemfd.o
-plugins/seek:        seek.o
+plugins/scriptlocal: unused.o
 
 # bash's include files are set up stupidly and the .pc file insists on infecting
 # us with it (by -Iing every include/bash/**/ directory)
