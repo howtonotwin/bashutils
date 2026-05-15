@@ -1,5 +1,4 @@
 #include <errno.h>
-#include <unistd.h>
 
 #include <bash/builtins.h>
 #include <bash/shell.h>

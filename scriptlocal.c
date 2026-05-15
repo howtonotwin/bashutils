@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <string.h>
 
 #include <bash/builtins.h>
 #include <bash/shell.h>

@@ -2,11 +2,11 @@ ifndef PKG_CONFIG
 PKG_CONFIG := pkg-config
 endif
 COMPILE.c = \
-  $(CC) -std=c23 -fPIC $(CFLAGS) \
+  $(CC) -std=c2y -fPIC $(CFLAGS) \
   -Iinclude -D_GNU_SOURCE $(CPPFLAGS) \
   $(TARGET_ARCH) -c
 
-ALL_PLUGINS := scriptlocal pipe mkmemfd seek
+ALL_PLUGINS := scriptlocal pipe mkmemfd mktempat seek
 
 .PHONY: all clean install
 all: $(addprefix plugins/,$(ALL_PLUGINS))
@@ -16,15 +16,12 @@ clean:
 install: all
 	install -Dt $(DESTDIR)/lib/bash plugins/*
 
-plugins/%:
+plugins/%: %.o
 	@mkdir -p $(@D)
 	$(CC) -shared -Wl,-soname,$(@F) $(LDFLAGS) \
 	  $(TARGET_ARCH) $(filter-out %.h %/,$+) $(LDLIBS) \
 	  -o $@
-plugins/scriptlocal: scriptlocal.o unused.o
-plugins/pipe:        pipe.o
-plugins/mkmemfd:     mkmemfd.o
-plugins/seek:        seek.o
+plugins/scriptlocal: unused.o
 
 # bash's include files are set up stupidly and the .pc file insists on infecting
 # us with it (by -Iing every include/bash/**/ directory)
@@ -33,7 +30,8 @@ bash_includedir := $(shell $(PKG_CONFIG) bash --variable=includedir)
 bash_headers    := $(patsubst ./%,%,$(patsubst $(bash_includedir)/bash/%,%,$\
   $(foreach sub,. builtins include,$\
     $(wildcard $(bash_includedir)/bash/$(sub)/*.h))))
-$(patsubst %.c,%.o,$(wildcard *.c)): $(addprefix include/bash/,$(bash_headers))
+  $(patsubst %.c,%.o,$(wildcard *.c)) \
+: $(addprefix include/bash/,$(bash_headers)) $(wildcard *.h)
 
 include/bash:
 	mkdir -p include
