@@ -6,13 +6,7 @@
 #include <bash/builtins/common.h>
 #include <bash/builtins/bashgetopt.h>
 
-static int strtofd(char const *str) {
-  if(!isdigit(*str)) return -1;
-  unsigned long parsed = strtoul(str, (char**)&str, 10);
-  int fd = parsed;
-  if(fd < 0 || fd != parsed) return -1;
-  return fd;
-}
+#include "util.h"
 
 static int mktempat_builtin(WORD_LIST *list) {
   int  excl_flag = 0;

@@ -30,7 +30,8 @@ bash_includedir := $(shell $(PKG_CONFIG) bash --variable=includedir)
 bash_headers    := $(patsubst ./%,%,$(patsubst $(bash_includedir)/bash/%,%,$\
   $(foreach sub,. builtins include,$\
     $(wildcard $(bash_includedir)/bash/$(sub)/*.h))))
-$(patsubst %.c,%.o,$(wildcard *.c)): $(addprefix include/bash/,$(bash_headers))
+  $(patsubst %.c,%.o,$(wildcard *.c)) \
+: $(addprefix include/bash/,$(bash_headers)) $(wildcard *.h)
 
 include/bash:
 	mkdir -p include
