@@ -23,7 +23,9 @@
           };
         };
       });
-      bashutils = final.callPackage ./. { };
+      bashutils = final.callPackage ./. {
+        stdenv = final.gcc16Stdenv;
+      };
     };
     overrides.bash.debuggable = pkgs: final: prev: {
       src = pkgs.runCommandLocal "bash-src" {
