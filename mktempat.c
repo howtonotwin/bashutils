@@ -1,6 +1,5 @@
 #include <errno.h>
 #include <fcntl.h>
-#include <unistd.h>
 
 #include <bash/builtins.h>
 #include <bash/shell.h>
