@@ -2,11 +2,11 @@ ifndef PKG_CONFIG
 PKG_CONFIG := pkg-config
 endif
 COMPILE.c = \
-  $(CC) -std=c23 -fPIC $(CFLAGS) \
+  $(CC) -std=c2y -fPIC $(CFLAGS) \
   -Iinclude -D_GNU_SOURCE $(CPPFLAGS) \
   $(TARGET_ARCH) -c
 
-ALL_PLUGINS := scriptlocal pipe mkmemfd seek
+ALL_PLUGINS := scriptlocal pipe mkmemfd mktempat seek
 
 .PHONY: all clean install
 all: $(addprefix plugins/,$(ALL_PLUGINS))
