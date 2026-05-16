@@ -4,11 +4,22 @@ stdenv.mkDerivation {
   version = "0.4.0-unstable-2026-05-15";
   __structuredAttrs = true;
 
-  src               = ./.;
+  src               = lib.fileset.toSource {
+    root    = ./.;
+    fileset = let
+      nixFiles = lib.fileset.unions [
+        ./default.nix
+        ./flake.nix
+        ./flake.lock
+      ];
+    in lib.fileset.difference ./. nixFiles;
+  };
   nativeBuildInputs = [ pkg-config ];
   buildInputs       = [ bash ];
-  preUnpack = ''
-    installFlagsArray+=("DESTDIR=''${out@Q}")
+  configurePhase    = ''
+    runHook preConfigure
+    makeFlagsArray+=("DESTDIR=''${out@Q}")
+    runHook postConfigure
   '';
   separateDebugInfo = true;
 
