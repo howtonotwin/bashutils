@@ -1,42 +1,48 @@
-ifndef PKG_CONFIG
-PKG_CONFIG := pkg-config
-endif
-COMPILE.c = \
-  $(CC) -std=c2y -fPIC $(CFLAGS) \
-  -Iinclude -D_GNU_SOURCE $(CPPFLAGS) \
-  $(TARGET_ARCH) -c
+PKG_CONFIG ?= pkg-config
+DESTDIR    ?= $(PREFIX.bash)
+# $(%.bash) variables come from bash.make, generated and included below
 
-ALL_PLUGINS := scriptlocal pipe mkmemfd mktempat seek
+define DRIVE.c
+$(CC) $(CFLAGS.bash) -std=c2y $(CFLAGS) \$ 
+	$(CPPFLAGS.bash) -Iinclude -D_GNU_SOURCE $(CPPFLAGS) \$ 
+	$(TARGET_ARCH)
+endef
+COMPILE.c = $(DRIVE.c) -c
+LINK.c    = $(DRIVE.c) $(LDFLAGS.bash) $(LDFLAGS)
+
+ALL_PLUGINS := scriptlocal seek fsync pipe mkmemfd mktempat lnat
 
 .PHONY: all clean install
 all: $(addprefix plugins/,$(ALL_PLUGINS))
 clean:
-	rm -rf include/bash
+	rm -rf include/bash bash.make
 	rm -rvf *.o plugins
 install: all
 	install -Dt $(DESTDIR)/lib/bash plugins/*
 
+bash.make: bash.make.sh
+	./$<
+	sed 's/-soname,$$@/-soname,$$(@F)/' -i $@
+include bash.make
+
 plugins/%: %.o
 	@mkdir -p $(@D)
-	$(CC) -shared -Wl,-soname,$(@F) $(LDFLAGS) \
-	  $(TARGET_ARCH) $(filter-out %.h %/,$+) $(LDLIBS) \
-	  -o $@
+	$(LINK.c) $+ $(LIBS.bash) $(LDLIBS) -o $@
 plugins/scriptlocal: unused.o
 
 # bash's include files are set up stupidly and the .pc file insists on infecting
 # us with it (by -Iing every include/bash/**/ directory)
 # Reject this by patching the headers
-bash_includedir := $(shell $(PKG_CONFIG) bash --variable=includedir)
-bash_headers    := $(patsubst ./%,%,$(patsubst $(bash_includedir)/bash/%,%,$\
+bash_headers := $(patsubst ./%,%,$(patsubst $(includedir.bash)/bash/%,%,$\
   $(foreach sub,. builtins include,$\
-    $(wildcard $(bash_includedir)/bash/$(sub)/*.h))))
+    $(wildcard $(includedir.bash)/bash/$(sub)/*.h))))
   $(patsubst %.c,%.o,$(wildcard *.c)) \
 : $(addprefix include/bash/,$(bash_headers)) $(wildcard *.h)
 
 include/bash:
 	mkdir -p include
 	rm -rf include/bash
-	cp -r --no-preserve=all $(bash_includedir)/bash include
+	cp -r --no-preserve=all $(includedir.bash)/bash include
 	touch include/bash
 bash-headers.sed:
 	echo '/^#include/{' >$@

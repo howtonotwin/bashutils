@@ -4,6 +4,8 @@
 #include <bash/shell.h>
 #include <bash/builtins/common.h>
 
+#include "util.h"
+
 // TODO: It's tempting, from an implementation perspective, to unconditionally
 //       print the new offset on stdout (removing the need to meddle with shell
 //       variables ourselves). However, to a user who doesn't want the new
@@ -19,14 +21,12 @@ static int seek_builtin(WORD_LIST *list) {
     list = list->next;
   }
 
-  intmax_t fd;
   if(!list) {
     builtin_error("missing fd");
     goto usage;
-  } else if(
-       !all_digits(list->word->word)
-    || !valid_number(list->word->word, &fd)
-    || fd < 0 || (int)fd != fd) {
+  }
+  int fd = strtofd(list->word->word);
+  if(fd == -1) {
     builtin_error("bad fd: %s", list->word->word);
     goto usage;
   }
@@ -73,8 +73,10 @@ static int seek_builtin(WORD_LIST *list) {
     goto usage;
   }
 
-  int whence = relative ? SEEK_CUR : SEEK_SET;
-  if(end) whence = SEEK_END;
+  int whence =
+      end      ? SEEK_END
+    : relative ? SEEK_CUR
+    :            SEEK_SET;
   offset = lseek64(fd, offset, whence);
 
   if(offset == -1) {
