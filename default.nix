@@ -14,14 +14,15 @@ stdenv.mkDerivation {
       ];
     in lib.fileset.difference ./. nixFiles;
   };
-  nativeBuildInputs = [ pkg-config ];
-  buildInputs       = [ bash ];
-  configurePhase    = ''
+  nativeBuildInputs      = [ pkg-config ];
+  buildInputs            = [ bash ];
+  enableParallelBuilding = true;
+  separateDebugInfo      = true;
+  configurePhase         = ''
     runHook preConfigure
     makeFlagsArray+=("DESTDIR=''${out@Q}")
     runHook postConfigure
   '';
-  separateDebugInfo = true;
 
   meta = {
     platforms = lib.platforms.linux;
