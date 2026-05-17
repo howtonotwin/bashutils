@@ -90,8 +90,13 @@ static int overlinkat(
     builtin_error("%s", strerror(errno));
     return EXECUTION_FAILURE;
   }
+  // renameat can succeed without removing the source entry if it refers to the
+  // same file as the destination already. We can't detect if this has happened
+  // except by trying to access the source entry again. Since we want the source
+  // entry deleted anyway, we can try to unlink it and eat ENOENT if needed.
+  bool tmpnam_unknown = false;
   defer {
-    if(unlinkat(tgtdirfd, tmpnam, 0)) {
+    if(unlinkat(tgtdirfd, tmpnam, 0) && !(tmpnam_unknown && errno == ENOENT)) {
       builtin_error("removing temporary entry: %s", strerror(errno));
     }
   }
@@ -101,6 +106,7 @@ static int overlinkat(
     builtin_error("%s", strerror(errno));
     return EXECUTION_FAILURE;
   }
+  tmpnam_unknown = true;
 
   return EXECUTION_SUCCESS;
 }
