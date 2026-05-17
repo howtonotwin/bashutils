@@ -66,9 +66,6 @@ static    bool       generate_mktemp_key(mktemp_key *slot) {
 static int opendirat(int relfd, char const *path) {
   return openat(relfd, *path ? path : ".", O_PATH | O_DIRECTORY | O_CLOEXEC);
 }
-static void maybe_close(int const *fd) {
-  if(*fd != -1) close(*fd);
-}
 static int overlinkat(
   int srcdirfd, char const *srcnam
 , int tgtdirfd, char const *tgtnam) {
@@ -93,18 +90,19 @@ static int overlinkat(
     builtin_error("%s", strerror(errno));
     return EXECUTION_FAILURE;
   }
+  defer {
+    if(unlinkat(tgtdirfd, tmpnam, 0)) {
+      builtin_error("removing temporary entry: %s", strerror(errno));
+    }
+  }
 
   // at long last...
-  int ret;
   if(renameat(tgtdirfd, tmpnam, tgtdirfd, tgtnam)) {
     builtin_error("%s", strerror(errno));
-    ret = EXECUTION_FAILURE;
-  } else ret = EXECUTION_SUCCESS;
-
-  if(unlinkat(tgtdirfd, tmpnam, 0)) {
-    builtin_error("removing temporary entry: %s", strerror(errno));
+    return EXECUTION_FAILURE;
   }
-  return ret;
+
+  return EXECUTION_SUCCESS;
 }
 
 static int lnat_builtin(WORD_LIST *list) {
@@ -187,7 +185,7 @@ getopts:
   if(list) goto usage;
 
   {
-    int srcdirfd [[gnu::cleanup(maybe_close)]];
+    int srcdirfd;
     if(!*srcnam) {
       srcdirfd = dup(srcrel);
       if(srcdirfd == -1) {
@@ -200,12 +198,14 @@ getopts:
       }
     }
     if(srcdirfd == -1) return EXECUTION_FAILURE;
+    defer { close(srcdirfd); }
 
-    int tgtdirfd [[gnu::cleanup(maybe_close)]] = opendirat(tgtrel, tgtdir);
+    int tgtdirfd = opendirat(tgtrel, tgtdir);
     if(tgtdirfd == -1) {
       builtin_error("cannot open target directory: %s", strerror(errno));
       return EXECUTION_FAILURE;
     }
+    defer { close(tgtdirfd); }
 
     if(!linkat(srcdirfd, srcnam, tgtdirfd, tgtnam, AT_EMPTY_PATH)) {
       return EXECUTION_SUCCESS;
