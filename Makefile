@@ -10,7 +10,7 @@ endef
 COMPILE.c = $(DRIVE.c) -c
 LINK.c    = $(DRIVE.c) $(LDFLAGS.bash) $(LDFLAGS)
 
-ALL_PLUGINS := scriptlocal pipe mkmemfd seek mktempat lnat
+ALL_PLUGINS := scriptlocal seek fsync pipe mkmemfd mktempat lnat
 
 .PHONY: all clean install
 all: $(addprefix plugins/,$(ALL_PLUGINS))
