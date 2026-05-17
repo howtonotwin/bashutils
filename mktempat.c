@@ -38,7 +38,7 @@ getopts:
 
   char const *dirpath = dir_is_fd || !dirarg ? "." : dirarg;
   int dirdirfd;
-  if(dir_is_fd) {
+  if(dir_is_fd && dirarg) {
     dirdirfd = strtofd(dirarg);
     if(dirdirfd == -1) goto usage;
   } else dirdirfd = AT_FDCWD;
