@@ -6,7 +6,7 @@ COMPILE.c = \
   -Iinclude -D_GNU_SOURCE $(CPPFLAGS) \
   $(TARGET_ARCH) -c
 
-ALL_PLUGINS := scriptlocal pipe mkmemfd mktempat seek
+ALL_PLUGINS := scriptlocal pipe mkmemfd seek mktempat lnat
 
 .PHONY: all clean install
 all: $(addprefix plugins/,$(ALL_PLUGINS))
