@@ -15,7 +15,7 @@ ALL_PLUGINS := scriptlocal seek fsync pipe mkmemfd mktempat lnat
 .PHONY: all clean install
 all: $(addprefix plugins/,$(ALL_PLUGINS))
 clean:
-	rm -rf include/bash
+	rm -rf include/bash bash.make
 	rm -rvf *.o plugins
 install: all
 	install -Dt $(DESTDIR)/lib/bash plugins/*
