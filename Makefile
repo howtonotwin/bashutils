@@ -2,13 +2,13 @@ PKG_CONFIG ?= pkg-config
 DESTDIR    ?= $(PREFIX.bash)
 # $(%.bash) variables come from bash.make, generated and included below
 
-define DRIVE.c
+define DRIVE.bash
 $(CC) $(CFLAGS.bash) -std=c2y $(CFLAGS) \$ 
 	$(CPPFLAGS.bash) -Iinclude -D_GNU_SOURCE $(CPPFLAGS) \$ 
 	$(TARGET_ARCH)
 endef
-COMPILE.c = $(DRIVE.c) -c
-LINK.c    = $(DRIVE.c) $(LDFLAGS.bash) $(LDFLAGS)
+COMPILE.bash = $(DRIVE.bash) -c
+LINK.bash    = $(DRIVE.bash) $(LDFLAGS.bash) $(LDFLAGS)
 
 ALL_PLUGINS := scriptlocal seek fsync pipe mkmemfd mktempat lnat
 
@@ -27,7 +27,9 @@ include bash.make
 
 plugins/%: %.o
 	@mkdir -p $(@D)
-	$(LINK.c) $+ $(LIBS.bash) $(LDLIBS) -o $@
+	$(LINK.bash) $+ $(LIBS.bash) $(LDLIBS) -o $@
+%.o: %.c
+	$(COMPILE.bash) $< -o $@
 plugins/scriptlocal: unused.o
 
 # bash's include files are set up stupidly and the .pc file insists on infecting
