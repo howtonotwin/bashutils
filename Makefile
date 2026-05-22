@@ -4,8 +4,8 @@ DESTDIR    ?= $(PREFIX.bash)
 
 define DRIVE.bash
 $(CC) $(CFLAGS.bash) -std=c2y $(CFLAGS) \$ 
-	$(CPPFLAGS.bash) -Iinclude -D_GNU_SOURCE $(CPPFLAGS) \$ 
-	$(TARGET_ARCH)
+	  $(CPPFLAGS.bash) -Iinclude -D_GNU_SOURCE $(CPPFLAGS) \$ 
+	  $(TARGET_ARCH)
 endef
 COMPILE.bash = $(DRIVE.bash) -c
 LINK.bash    = $(DRIVE.bash) $(LDFLAGS.bash) $(LDFLAGS)
@@ -21,7 +21,7 @@ install: all
 	install -Dt $(DESTDIR)/lib/bash plugins/*
 
 bash.make: bash.make.sh
-	./$<
+	PKG_CONFIG=$(PKG_CONFIG) ./$<
 	sed 's/-soname,$$@/-soname,$$(@F)/' -i $@
 include bash.make
 
