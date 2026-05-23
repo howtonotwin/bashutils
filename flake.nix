@@ -27,16 +27,6 @@
         stdenv = final.gcc16Stdenv;
       };
     };
-    overrides.bash.debuggable = pkgs: final: prev: {
-      postUnpack = lib.concatStringsSep "\n"
-        (  lib.catAttrs "postUnpack" [ prev ]
-        ++ [ ''export CFLAGS="''${CFLAGS:+$CFLAGS }-Og -g"'' ]);
-    };
-    overrides.bash.fullPluginInterface = pkgs: final: prev: {
-      postUnpack = lib.concatStringsSep "\n"
-        (  lib.catAttrs "postUnpack" [ prev ]
-        ++ [ ''export CFLAGS="''${CFLAGS:+$CFLAGS }-DINCLUDE_UNUSED"'' ]);
-    };
   } // forSystems lib.platforms.linux (system: self: let
     pkgs = import nixpkgs {
       inherit system;
@@ -48,28 +38,5 @@
       inherit (pkgs) bashutils;
       default = self.packages.bashutils;
     };
-
-    devShells = {
-      default = self.devShellGenerators.bashutilsWithBashOverrides [
-        self.overrides.bash.debuggable
-      ];
-      withFullBash = self.devShellGenerators.bashutilsWithBashOverrides [
-        self.overrides.bash.debuggable
-        self.overrides.bash.fullPluginInterface
-      ];
-    };
-    devShellGenerators.bashutilsWithBashOverrides = overrides: let
-      bash' = lib.foldl
-        (pkg: override: pkg.overrideAttrs (override pkgs))
-        pkgs.bash
-        overrides;
-      pkg = self.packages.bashutils.override { bash = bash'; };
-    in pkg.overrideAttrs (final: prev: {
-      name = "${prev.pname}-dev";
-      NIX_DEBUG_INFO_DIRS = lib.makeSearchPathOutput
-        "debug"
-        "lib/debug"
-        [ bash' ];
-    });
   });
 }
