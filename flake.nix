@@ -28,20 +28,14 @@
       };
     };
     overrides.bash.debuggable = pkgs: final: prev: {
-      src = pkgs.runCommandLocal "bash-src" {
-        inherit (prev) src;
-      } ''
-        unpackPhase
-        mv -v "$sourceRoot" "$out"
-      '';
-      postUnpack = prev.postUnpack or "" + ''
-        export CFLAGS+=" -Og -g"
-      '';
+      postUnpack = lib.concatStringsSep "\n"
+        (  lib.catAttrs "postUnpack" [ prev ]
+        ++ [ ''export CFLAGS="''${CFLAGS:+$CFLAGS }-Og -g"'' ]);
     };
     overrides.bash.fullPluginInterface = pkgs: final: prev: {
-      postUnpack = prev.postUnpack or "" + ''
-        export CFLAGS+=" -DINCLUDE_UNUSED"
-      '';
+      postUnpack = lib.concatStringsSep "\n"
+        (  lib.catAttrs "postUnpack" [ prev ]
+        ++ [ ''export CFLAGS="''${CFLAGS:+$CFLAGS }-DINCLUDE_UNUSED"'' ]);
     };
   } // forSystems lib.platforms.linux (system: self: let
     pkgs = import nixpkgs {
@@ -70,12 +64,8 @@
         pkgs.bash
         overrides;
       pkg = self.packages.bashutils.override { bash = bash'; };
-    in (pkgs.mkShell.override {
-      inherit (pkg) stdenv;
-    } {
-      name = "bashutils-dev";
-      inputsFrom = [ pkg ];
-    }).overrideAttrs (final: prev: {
+    in pkg.overrideAttrs (final: prev: {
+      name = "${prev.pname}-dev";
       NIX_DEBUG_INFO_DIRS = lib.makeSearchPathOutput
         "debug"
         "lib/debug"
