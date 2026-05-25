@@ -1,6 +1,5 @@
 #include <errno.h>
 #include <stdckdint.h>
-#include <stdcountof.h>
 #include <unistd.h>
 
 #include <sys/capability.h>
