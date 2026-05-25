@@ -2,35 +2,44 @@ PKG_CONFIG ?= pkg-config
 DESTDIR    ?= $(EXEC_PREFIX.bash)
 # $(%.bash) variables come from bash.make, generated and included below
 
-define DRIVE.bash
-$(CC) $(CFLAGS.bash) -std=c2y $(CFLAGS) \$ 
-	  $(CPPFLAGS.bash) -Iinclude -D_GNU_SOURCE $(CPPFLAGS) \$ 
+override , := ,
+
+override CFLAGS.deps   =
+override CPPFLAGS.deps =
+override LDFLAGS.deps  =
+override LIBS.deps     =
+define DRIVE.c
+$(CC) $(CFLAGS.deps) -std=c2y $(CFLAGS) \$ 
+	  $(CPPFLAGS.deps) -Iinclude -D_GNU_SOURCE $(CPPFLAGS) \$ 
 	  $(TARGET_ARCH)
 endef
-COMPILE.bash = $(DRIVE.bash) -c
-LINK.bash    = $(DRIVE.bash) $(LDFLAGS.bash) $(LDFLAGS)
+COMPILE.c = $(DRIVE.c) -c
+LINK.c    = $(DRIVE.c) $(LDFLAGS.deps) $(LDFLAGS)
 
 ALL_PLUGINS := scriptlocal seek fsync pipe mkmemfd mktempat lnat
+ALL_DEPS    := bash
 
 .PHONY: all clean install
 all: $(addprefix plugins/,$(ALL_PLUGINS))
 clean:
-	rm -rf include/bash bash.make
+	rm -vf $(ALL_DEPS:=.make)
+	rm -rf include/bash
 	rm -rvf *.o plugins
 install: all
 	install -Dt $(DESTDIR)/lib/bash plugins/*
 
-bash.make: bash.make.sh
+%.make: %.make.sh
 	PKG_CONFIG=$(PKG_CONFIG) ./$<
-	sed 's/-soname,$$@/-soname,$$(@F)/' -i $@
-include bash.make
+include $(ALL_DEPS:=.make)
 
 plugins/%: %.o
 	@mkdir -p $(@D)
-	$(LINK.bash) $+ $(LIBS.bash) $(LDLIBS) -o $@
-%.o: %.c
-	$(COMPILE.bash) $< -o $@
+	$(LINK.c) $+ $(LIBS.deps) $(LDLIBS) -o $@
 plugins/scriptlocal: unused.o
+$(addprefix plugins/,$(ALL_PLUGINS)): CFLAGS.deps   += $(CFLAGS.bash)
+$(addprefix plugins/,$(ALL_PLUGINS)): CPPFLAGS.deps += $(CPPFLAGS.bash)
+$(addprefix plugins/,$(ALL_PLUGINS)): LDFLAGS.deps  += $(LDFLAGS.bash)
+$(addprefix plugins/,$(ALL_PLUGINS)): LIBS.deps     += $(LIBS.bash)
 
 # bash's include files are set up stupidly and the .pc file insists on infecting
 # us with it (by -Iing every include/bash/**/ directory)
