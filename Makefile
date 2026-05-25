@@ -1,34 +1,49 @@
 PKG_CONFIG ?= pkg-config
-DESTDIR    ?= $(PREFIX.bash)
-# $(%.bash) variables come from bash.make, generated and included below
+DESTDIR    ?= $(EXEC_PREFIX.bash)
+# $(*.%) variables come from %.make, generated and included below
 
+override , := ,
+
+override CFLAGS.deps   =
+override CPPFLAGS.deps =
+override LDFLAGS.deps  =
+override LIBS.deps     =
 define DRIVE.c
-$(CC) $(CFLAGS.bash) -std=c2y $(CFLAGS) \$ 
-	$(CPPFLAGS.bash) -Iinclude -D_GNU_SOURCE $(CPPFLAGS) \$ 
-	$(TARGET_ARCH)
+$(CC) $(CFLAGS.deps) -std=c2y $(CFLAGS) \$ 
+	  $(CPPFLAGS.deps) -Iinclude -D_GNU_SOURCE $(CPPFLAGS) \$ 
+	  $(TARGET_ARCH)
 endef
 COMPILE.c = $(DRIVE.c) -c
-LINK.c    = $(DRIVE.c) $(LDFLAGS.bash) $(LDFLAGS)
+LINK.c    = $(DRIVE.c) $(LDFLAGS.deps) $(LDFLAGS)
 
-ALL_PLUGINS := scriptlocal seek fsync pipe mkmemfd mktempat lnat
+ALL_PLUGINS := scriptlocal seek fsync pipe mkmemfd mktempat lnat capset
+ALL_DEPS    := bash libcap
 
 .PHONY: all clean install
 all: $(addprefix plugins/,$(ALL_PLUGINS))
 clean:
-	rm -rf include/bash bash.make
+	rm -vf $(ALL_DEPS:=.make)
+	rm -rf include/bash
 	rm -rvf *.o plugins
 install: all
 	install -Dt $(DESTDIR)/lib/bash plugins/*
 
-bash.make: bash.make.sh
-	./$<
-	sed 's/-soname,$$@/-soname,$$(@F)/' -i $@
-include bash.make
+%.make: %.make.sh
+	PKG_CONFIG=$(PKG_CONFIG) ./$<
+include $(ALL_DEPS:=.make)
 
 plugins/%: %.o
 	@mkdir -p $(@D)
-	$(LINK.c) $+ $(LIBS.bash) $(LDLIBS) -o $@
+	$(LINK.c) $+ $(LIBS.deps) $(LDLIBS) -o $@
 plugins/scriptlocal: unused.o
+$(addprefix plugins/,$(ALL_PLUGINS)): CFLAGS.deps   += $(CFLAGS.bash)
+$(addprefix plugins/,$(ALL_PLUGINS)): CPPFLAGS.deps += $(CPPFLAGS.bash)
+$(addprefix plugins/,$(ALL_PLUGINS)): LDFLAGS.deps  += $(LDFLAGS.bash)
+$(addprefix plugins/,$(ALL_PLUGINS)): LIBS.deps     += $(LIBS.bash)
+plugins/capset:                       CFLAGS.deps   += $(CFLAGS.libcap)
+plugins/capset:                       CPPFLAGS.deps += $(CPPFLAGS.libcap)
+plugins/capset:                       LDFLAGS.deps  += $(LDFLAGS.libcap)
+plugins/capset:                       LIBS.deps     += $(LIBS.libcap)
 
 # bash's include files are set up stupidly and the .pc file insists on infecting
 # us with it (by -Iing every include/bash/**/ directory)

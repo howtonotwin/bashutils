@@ -2,4 +2,4 @@
 /plugins
 *.o
 /include/bash
-/bash.make
+/*.make

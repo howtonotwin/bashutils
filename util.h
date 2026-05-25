@@ -21,7 +21,7 @@ struct __defer_anchor { };
     struct __defer_anchor*)
 #endif
 
-static int strtofd(char const *str) {
+static inline int strtofd(char const *str) {
   if(!isdigit(*str)) return -1;
   unsigned long parsed = strtoul(str, (char**)&str, 10);
   int fd = parsed;

@@ -1,7 +1,7 @@
-{ lib, stdenv, pkg-config, bash }:
+{ lib, stdenv, pkg-config, bash, libcap }:
 stdenv.mkDerivation {
   pname = "bashutils";
-  version = "0.5.0-unstable-2026-05-17";
+  version = "0.5.0-unstable-2026-05-25";
   __structuredAttrs = true;
 
   src               = lib.fileset.toSource {
@@ -15,7 +15,7 @@ stdenv.mkDerivation {
     in lib.fileset.difference ./. nixFiles;
   };
   nativeBuildInputs      = [ pkg-config ];
-  buildInputs            = [ bash ];
+  buildInputs            = [ bash libcap ];
   enableParallelBuilding = true;
   separateDebugInfo      = true;
   configurePhase         = ''
