@@ -1,6 +1,6 @@
 PKG_CONFIG ?= pkg-config
 DESTDIR    ?= $(EXEC_PREFIX.bash)
-# $(%.bash) variables come from bash.make, generated and included below
+# $(*.%) variables come from %.make, generated and included below
 
 override , := ,
 
@@ -16,8 +16,8 @@ endef
 COMPILE.c = $(DRIVE.c) -c
 LINK.c    = $(DRIVE.c) $(LDFLAGS.deps) $(LDFLAGS)
 
-ALL_PLUGINS := scriptlocal seek fsync pipe mkmemfd mktempat lnat
-ALL_DEPS    := bash
+ALL_PLUGINS := scriptlocal seek fsync pipe mkmemfd mktempat lnat capset
+ALL_DEPS    := bash libcap
 
 .PHONY: all clean install
 all: $(addprefix plugins/,$(ALL_PLUGINS))
@@ -40,6 +40,10 @@ $(addprefix plugins/,$(ALL_PLUGINS)): CFLAGS.deps   += $(CFLAGS.bash)
 $(addprefix plugins/,$(ALL_PLUGINS)): CPPFLAGS.deps += $(CPPFLAGS.bash)
 $(addprefix plugins/,$(ALL_PLUGINS)): LDFLAGS.deps  += $(LDFLAGS.bash)
 $(addprefix plugins/,$(ALL_PLUGINS)): LIBS.deps     += $(LIBS.bash)
+plugins/capset:                       CFLAGS.deps   += $(CFLAGS.libcap)
+plugins/capset:                       CPPFLAGS.deps += $(CPPFLAGS.libcap)
+plugins/capset:                       LDFLAGS.deps  += $(LDFLAGS.libcap)
+plugins/capset:                       LIBS.deps     += $(LIBS.libcap)
 
 # bash's include files are set up stupidly and the .pc file insists on infecting
 # us with it (by -Iing every include/bash/**/ directory)
