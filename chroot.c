@@ -20,7 +20,7 @@ static int chroot_builtin(WORD_LIST *list) {
 }
 
 static char const *const chroot_doc[] = {
-  "Set the current root directory, just like chroot(2)",
+  "Set the current root directory, just like chroot(2).",
   "",
   "Given a path NEWROOT leading to some directory, set that directory as",
   "the current root directory of the shell process. Note that the current",
