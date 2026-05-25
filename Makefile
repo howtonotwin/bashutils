@@ -1,5 +1,5 @@
 PKG_CONFIG ?= pkg-config
-DESTDIR    ?= $(PREFIX.bash)
+DESTDIR    ?= $(EXEC_PREFIX.bash)
 # $(%.bash) variables come from bash.make, generated and included below
 
 define DRIVE.bash
