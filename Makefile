@@ -16,7 +16,7 @@ endef
 COMPILE.c = $(DRIVE.c) -c
 LINK.c    = $(DRIVE.c) $(LDFLAGS.deps) $(LDFLAGS)
 
-ALL_PLUGINS := scriptlocal seek fsync pipe mkmemfd mktempat lnat capset chroot
+ALL_PLUGINS := scriptlocal seek fsync pipe mkmemfd open lnat capset chroot
 ALL_DEPS    := bash libcap
 
 .PHONY: all clean install
