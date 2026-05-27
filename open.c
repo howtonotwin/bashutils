@@ -60,6 +60,9 @@ getopts:
   case 'D':
     directory = true;
     break;
+  case 'e':
+    excl = true;
+    break;
   case 'L':
     nofollow = true;
     break;
