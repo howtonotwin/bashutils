@@ -1,3 +1,6 @@
+// Copyright 1987-2025 Free Software Foundation, Inc.
+// Copyright 2026 Rasheeq Azad <rasheeqazad@howtonotwin.net>
+// SPDX-LicenseIdentifier: GPL-3.0-or-later
 #include <bash/builtins.h>
 #include <bash/shell.h>
 
@@ -5,6 +8,8 @@
 // we have to provide our own definitions
 // if bash DOES define these (if it was built with INCLUDE_UNUSED set), then the
 // dynamic linker will prefer bash's definitions
+
+// the following are mostly copied from bash-5.3/variables.c
 
 static void *copy_variable_erased(void *entry_erased) {
   return copy_variable(entry_erased);

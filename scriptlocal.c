@@ -1,3 +1,5 @@
+// Copyright 2026 Rasheeq Azad <rasheeqazad@howtonotwin.net>
+// SPDX-LicenseIdentifier: GPL-3.0-or-later
 #include <assert.h>
 
 #include <bash/builtins.h>

@@ -1,3 +1,5 @@
+# Copyright 2026 Rasheeq Azad <rasheeqazad@howtonotwin.net>
+# SPDX-LicenseIdentifier: GPL-3.0-or-later
 PKG_CONFIG ?= pkg-config
 PREFIX     ?= $(EXEC_PREFIX.bash)
 # $(*.%) variables come from %.make, generated and included below
