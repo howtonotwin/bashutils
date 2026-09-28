@@ -1,8 +1,8 @@
+# Copyright 2026 Rasheeq Azad <rasheeqazad@howtonotwin.net>
+# SPDX-LicenseIdentifier: GPL-3.0-or-later
 PKG_CONFIG ?= pkg-config
-DESTDIR    ?= $(EXEC_PREFIX.bash)
+PREFIX     ?= $(EXEC_PREFIX.bash)
 # $(*.%) variables come from %.make, generated and included below
-
-override , := ,
 
 override CFLAGS.deps   =
 override CPPFLAGS.deps =
@@ -26,7 +26,7 @@ clean:
 	rm -rf include/bash
 	rm -rvf *.o plugins
 install: all
-	install -Dt $(DESTDIR)/lib/bash plugins/*
+	install -Dt $(DESTDIR)$(PREFIX)/lib/bash plugins/*
 
 %.make: %.make.sh
 	PKG_CONFIG=$(PKG_CONFIG) ./$<

@@ -1,3 +1,5 @@
+// Copyright 2026 Rasheeq Azad <rasheeqazad@howtonotwin.net>
+// SPDX-LicenseIdentifier: GPL-3.0-or-later
 #include <errno.h>
 #include <stdckdint.h>
 #include <unistd.h>

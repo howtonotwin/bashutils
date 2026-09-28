@@ -1,10 +1,10 @@
 { lib, stdenv, pkg-config, bash, libcap }:
 stdenv.mkDerivation {
   pname = "bashutils";
-  version = "0.7.2-unstable-2026-05-26";
+  version = "0.7.2-unstable-2026-09-28";
   __structuredAttrs = true;
 
-  src               = lib.fileset.toSource {
+  src = lib.fileset.toSource {
     root    = ./.;
     fileset = let
       nixFiles = lib.fileset.unions [
@@ -20,12 +20,12 @@ stdenv.mkDerivation {
   separateDebugInfo      = true;
   configurePhase         = ''
     runHook preConfigure
-    makeFlagsArray+=("DESTDIR=''${out@Q}")
+    makeFlagsArray+=("PREFIX = ''${out@Q}")
     runHook postConfigure
   '';
 
   meta = {
     platforms = lib.platforms.linux;
-    license = lib.licenses.howtonotwin;
+    license   = lib.licensesSpdx."GPL-3.0-or-later";
   };
 }

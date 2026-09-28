@@ -12,17 +12,6 @@
         systems);
   in {
     overlays.default = final: prev: {
-      lib = prev.lib.extend (final: prev: {
-        licenses = prev.licenses // {
-          howtonotwin = {
-            shortName       = "howtonotwin";
-            fullName        = "(c) Rasheeq Azad. All Rights Reserved";
-            free            = false;
-            deprecated      = false;
-            redistributable = false;
-          };
-        };
-      });
       bashutils = final.callPackage ./. {
         stdenv = final.gcc16Stdenv;
       };
@@ -31,7 +20,6 @@
     pkgs = import nixpkgs {
       inherit system;
       overlays = [ self.overlays.default ];
-      config.allowlistedLicenses = [ pkgs.lib.licenses.howtonotwin ];
     };
   in {
     packages = {
