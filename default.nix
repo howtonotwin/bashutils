@@ -1,5 +1,5 @@
 { lib, stdenv, pkg-config, bash, libcap }:
-stdenv.mkDerivation {
+stdenv.mkDerivation (finalAttrs: {
   pname = "bashutils";
   version = "0.7.3-unstable-2026-09-28";
   __structuredAttrs = true;
@@ -27,4 +27,8 @@ stdenv.mkDerivation {
     platforms = lib.platforms.linux;
     license   = lib.licensesSpdx."GPL-3.0-or-later";
   };
-}
+  passthru.bashLoadables = {
+    propagated = [ "${finalAttrs.finalPackage}/lib/bash" ];
+    target     = lib.getExe bash;
+  };
+})
