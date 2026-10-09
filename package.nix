@@ -10,7 +10,7 @@ stdenv.mkDerivation (finalAttrs: {
       (lib.fileset.gitTracked ./.)
       (lib.fileset.unions [
         ./.gitignore ./README.md
-        ./default.nix ./flake.nix ./flake.lock
+        ./package.nix ./writeShellApplication.nix ./flake.nix ./flake.lock
       ]);
   };
   nativeBuildInputs      = [ pkg-config ];
