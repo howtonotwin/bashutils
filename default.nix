@@ -6,13 +6,12 @@ stdenv.mkDerivation {
 
   src = lib.fileset.toSource {
     root    = ./.;
-    fileset = let
-      nixFiles = lib.fileset.unions [
-        ./default.nix
-        ./flake.nix
-        ./flake.lock
-      ];
-    in lib.fileset.difference ./. nixFiles;
+    fileset = lib.fileset.difference
+      (lib.fileset.gitTracked ./.)
+      (lib.fileset.unions [
+        ./.gitignore ./README.md
+        ./default.nix ./flake.nix ./flake.lock
+      ]);
   };
   nativeBuildInputs      = [ pkg-config ];
   buildInputs            = [ bash libcap ];
